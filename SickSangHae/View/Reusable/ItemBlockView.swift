@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ItemBlockView: View {
+    @State var itemName: String = ""
+    @State var itemAmount: String = ""
+    
     var body: some View {
         
         ZStack {
@@ -19,7 +22,7 @@ struct ItemBlockView: View {
                 HStack {
                     Text("품목")
                         .padding(.leading,20)
-                    Text("품목을 입력해주세요.")
+                    TextField("품목을 입력해주세요.", text: $itemName)
                         .foregroundColor(.blueGrayColor)
                         .padding(.leading,30)
                 }
@@ -29,11 +32,14 @@ struct ItemBlockView: View {
                 HStack {
                     Text("금액")
                         .padding(.leading,20)
-                    Text("금액을 입력해주세요.")
+                    TextField("금액을 입력해주세요.", text: $itemAmount)
                         .foregroundColor(.blueGrayColor)
                         .padding(.leading,30)
                 }
+                
             }
+            .padding(.horizontal, 22)
+            
             Image(systemName: "xmark.circle.fill")
                 .resizable()
                 .frame(width:25 ,height:25)
