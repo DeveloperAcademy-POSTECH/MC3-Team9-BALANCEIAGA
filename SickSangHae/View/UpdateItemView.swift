@@ -58,7 +58,8 @@ struct UpdateItemView: View {
                             .foregroundColor(.blueGrayColor)
                             .padding(.leading,30)
                     }
-                }.padding(.horizontal, 22)
+                }
+                .padding(.horizontal, 22)
                 
             } // 품목과 금액 입력 탭 - X버튼 없어야 해서 ItemBlockView와 별개로 넣어놓음
 
