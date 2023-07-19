@@ -1,8 +1,8 @@
 //
-//  AddItemView.swift
+//  UpdateItemView.swift
 //  SickSangHae
 //
-//  Created by 최효원 on 2023/07/06.
+//  Created by CHANG JIN LEE on 2023/07/17.
 //
 
 import SwiftUI
@@ -23,7 +23,7 @@ struct UpdateItemView: View {
                     .resizable()
                     .frame(width: 15, height: 15)
             }.padding(.trailing, 20)
-            
+
             HStack {
                 Image(systemName: "chevron.left")
                     .frame(width: 8, height: 14.2)
@@ -34,7 +34,7 @@ struct UpdateItemView: View {
                     .frame(width: 8, height: 14.2)
                     .foregroundColor(.blueGrayColor)
             } // 날짜 선택
-            
+
             ZStack {
                 Rectangle()
                     .frame(width: 350, height: 116)
@@ -61,7 +61,7 @@ struct UpdateItemView: View {
                 }.padding(.horizontal, 22)
                 
             } // 품목과 금액 입력 탭 - X버튼 없어야 해서 ItemBlockView와 별개로 넣어놓음
-            
+
             ZStack {
                 Rectangle()
                     .frame(width: 350, height: 60)
@@ -76,9 +76,9 @@ struct UpdateItemView: View {
             }
             .padding(.top, 15)
             // 품목 추가 버튼
-            
+
             Spacer()
-            
+
             ZStack {
                 Rectangle()
                     .frame(width: 350, height: 60)
@@ -94,7 +94,7 @@ struct UpdateItemView: View {
         }
     }
 }
-    
+
     struct UpdateItemView_Previews: PreviewProvider {
         static var previews: some View {
             UpdateItemView()
