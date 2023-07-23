@@ -9,46 +9,56 @@ import SwiftUI
 
 struct SmallButtonView: View {
     var body: some View {
-        HStack {
-            Button("먹었어요😋") {
-                print("click")
+        ZStack {
+            VStack{
+                Spacer()
+                    .frame(height: 710.adjusted)
+                Divider()
+                    .foregroundColor(Color("Gray100"))
+                    .frame(width: 390.adjusted, height: 1.adjusted)
+                HStack {
+                    Button("먹었어요😋") {
+                        print("click")
+                    }
+                    .buttonStyle(CustomButtonStyle())
+                    .background(
+                        Rectangle()
+                            .stroke(lineWidth: 0)
+                            .background(Color("PrimaryG"))
+                            .cornerRadius(15)
+                    )
+                    Spacer()
+                    Button("상했어요🤢") {
+                        print("click")
+                    }
+                    .buttonStyle(CustomButtonStyle())
+                    .background(
+                        Rectangle()
+                            .stroke(lineWidth: 0)
+                            .background(Color("SmallButton"))
+                            .cornerRadius(15)
+                    )
+                }
+                .padding(EdgeInsets(top: 20.adjusted, leading: 20.adjusted, bottom: 40.adjusted, trailing: 20.adjusted))
             }
-            .buttonStyle(CustomButtonStyle())
-            .background(
-                Rectangle()
-                    .stroke(lineWidth: 0)
-                    .background(Color("PrimaryG"))
-                    .cornerRadius(15)
-            )
-            Spacer()
-            Button("상했어요🤢") {
-                print("click")
-            }
-            .buttonStyle(CustomButtonStyle())
-            .background(
-                Rectangle()
-                    .stroke(lineWidth: 0)
-                    .background(Color("SmallButton"))
-                    .cornerRadius(15)
-            )
+            .frame(width: 390.adjusted, height: 119.adjusted)
         }
-        .padding(.horizontal, 20)
     }
-}
-
-struct CustomButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .bold()
-            .frame(width: 167.adjusted, height: 60.adjusted)
-            .foregroundColor(.white)
-            .opacity(configuration.isPressed ? 0.7 : 1)
+    
+    struct CustomButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .fontWeight(.heavy)
+                .frame(width: 167.adjusted, height: 60.adjusted)
+                .foregroundColor(.white)
+                .opacity(configuration.isPressed ? 0.7 : 1)
+        }
     }
-}
-
-
-struct SmallButtonView_Previews: PreviewProvider {
-    static var previews: some View {
-        SmallButtonView()
+    
+    
+    struct SmallButtonView_Previews: PreviewProvider {
+        static var previews: some View {
+            SmallButtonView()
+        }
     }
 }
