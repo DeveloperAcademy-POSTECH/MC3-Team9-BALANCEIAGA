@@ -11,8 +11,6 @@ struct SmallButtonView: View {
     var body: some View {
         ZStack {
             VStack{
-                Spacer()
-                    .frame(height: 710.adjusted)
                 Divider()
                     .foregroundColor(Color("Gray100"))
                     .frame(width: 390.adjusted, height: 1.adjusted)
@@ -39,7 +37,8 @@ struct SmallButtonView: View {
                             .cornerRadius(15)
                     )
                 }
-                .padding(EdgeInsets(top: 20.adjusted, leading: 20.adjusted, bottom: 40.adjusted, trailing: 20.adjusted))
+                .padding(EdgeInsets(top: 15.adjusted, leading: 20.adjusted, bottom: 40.adjusted, trailing: 20.adjusted))
+                // Figma 화면과 비슷한 배율로 그리려면 top padding 15로 해야함
             }
             .frame(width: 390.adjusted, height: 119.adjusted)
         }
