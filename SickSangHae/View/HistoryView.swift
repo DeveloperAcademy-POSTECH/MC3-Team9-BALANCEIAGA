@@ -14,115 +14,88 @@ struct HistoryView: View {
     @State var isDeletingItem = false
     @State var selectedItem: Receipt?
     
+    @State private var isChangeTab = true
+    
     @EnvironmentObject var coreDataViewModel: CoreDataViewModel
     
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                //버튼 및 타이틀
-                Spacer()
-                    .frame(height: 32)
-                
-                HStack {
-                    Text("보관함")
-                        .font(.pretendard(.bold, size: 28))
-                        .foregroundColor(Color("PrimaryGB"))
-                        .padding(.horizontal, 20)
-                    Spacer()
-                }
-                
-                Spacer()
-                    .frame(height: 20)
+                Text("식기록")
+                    .font(.pretendard(.bold, size: 28))
+                    .foregroundColor(.primaryGB)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 30)
                 
                 segmentedTabButton
-                    .padding(.horizontal, 20)
-//
                 
                 ScrollView {
-                    deleteNotiMessage
-                    
                     listSection
-                    
-                    
-                } //ScrollView닫기
+                }
                 .listStyle(.plain)
-                
-
-            } //VStack닫기
+            } // VStack
             
-        CenterAlertView(titleMessage: "식료품 삭제", bodyMessage: selectedItem?.name ?? "알수없음", actionButtonMessage: "삭제", isShowingCenterAlertView: $isShowingCenterAlertView, isDeletingItem: $isDeletingItem)
-                .opacity(isShowingCenterAlertView ? 1 : 0)
+        CenterAlertView(
+            titleMessage: "식료품 삭제",
+            bodyMessage: selectedItem?.name ?? "알수없음",
+            actionButtonMessage: "삭제",
+            isShowingCenterAlertView: $isShowingCenterAlertView,
+            isDeletingItem: $isDeletingItem
+        )
+            .opacity(isShowingCenterAlertView ? 1 : 0)
             .onChange(of: isDeletingItem) { _ in
                 if isDeletingItem {
                     coreDataViewModel.deleteReceiptData(target: selectedItem)
                     isDeletingItem = false
-                }
-            }
-        }
-    } //body닫기
+                } // if
+            } // onChange
+        } // ZStack
+    } // body
     
     var segmentedTabButton: some View {
-        HStack {
             VStack(spacing: 0) {
-                Spacer()
+                HStack(spacing: 0) {
+                    Button(action: {
+                        isEatenTab = true
+                        withAnimation(.spring(duration: 0.3)) {
+                            isChangeTab = true
+                        }
+                    }, label: {
+                        Text("먹었어요😋")
+                            .font(.pretendard(.bold, size: 20))
+                            .foregroundColor(.gray900)
+                            .frame(width: screenWidth * 0.5)
+                            .padding(.vertical, 16)
+                    }) // Button
+                    
+                    Button(action: {
+                        isEatenTab = false
+                        withAnimation(.spring(duration: 0.3)) {
+                            isChangeTab = false
+                        }
+                    }, label: {
+                        Text("상했어요🤢")
+                            .font(.pretendard(.bold, size: 20))
+                            .foregroundColor(.gray900)
+                            .frame(width: screenWidth * 0.5)
+                            .padding(.vertical, 16)
+                    }) // Button
+                } // HStack
                 
-                Button(action: {
-                    isEatenTab = true
-                }, label: {
-                    Text("먹었어요😋")
-                        .font(.pretendard(.bold, size: 20))
-                        .foregroundColor(Color("Gray900"))
-                }) //Button닫기
+                Rectangle()
+                    .foregroundColor(.primaryGB)
+                    .frame(width: screenWidth * 0.5, height: 3)
+                    .padding(.leading, isChangeTab ? 0 : screenWidth * 0.5)
+                    .padding(.trailing, isChangeTab ? screenWidth * 0.5 : 0)
                 
-                Spacer()
-
-                RoundedRectangle(cornerRadius: 1.5)
-                    .foregroundColor(isEatenTab ? Color("PrimaryGB") : .clear)
-                    .frame(width: 155, height: 3)
-            } //VStack닫기
-            
-            Spacer()
-                .frame(minWidth: 10, maxWidth: 40)
-            
-            VStack(spacing: 0) {
-                Spacer()
-                
-                Button(action: {
-                    isEatenTab = false
-                }, label: {
-                    Text("상했어요🤢")
-                        .font(.pretendard(.bold, size: 20))
-                        .foregroundColor(Color("Gray900"))
-                }) //Button닫기
-                
-                Spacer()
-                
-                RoundedRectangle(cornerRadius: 1.5)
-                    .foregroundColor(isEatenTab ? .clear : Color("PrimaryGB"))
-                    .frame(width: 155, height: 3)
-            } //VStack닫기
-        } //HStack닫기
-        .frame(height: 52)
-    } //segmentedTabButton닫기
-    
-    
-    var deleteNotiMessage: some View {
-        VStack(alignment: .leading) {
-            Spacer()
-                .frame(height: 24)
-            
-            Text("아래의 항목들은 이곳에서 90일 동안 보관됩니다. 각 항목들은 90일이 지나면 영구적으로 삭제됩니다.")
-                .font(.pretendard(.regular, size: 14))
-                .foregroundColor(Color("Gray600"))
-            
-        } //VStack닫기
-        .padding(.horizontal, 18)
-        
-    } //deleteNotiMessage닫기
-    
+                Rectangle()
+                    .foregroundColor(.gray100)
+                    .frame(height: 1)
+            } // VStack
+    } // segmentedTabButton
     
     var listSection: some View {
-        
         var targetDictionary: [String : [Receipt]] = [String : [Receipt]]()
         var keys: [String] = [String]()
         
@@ -133,84 +106,91 @@ struct HistoryView: View {
             targetDictionary = coreDataViewModel.spoiledDictionary
             keys = Array(targetDictionary.keys.sorted(by: >))
         }
-
-        return ForEach(keys, id:\.self) { key in
-            VStack {
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .frame(width: screenWidth, height: 12)
-                    .background(Color("Gray100"))
-                
-                listTitle(itemDictionary: targetDictionary, key: key)
-                itemList(itemDictionary: targetDictionary, key: key)
-            }
-        }
         
-    } //listSection닫기
+        let content: AnyView
+        
+        if keys.isEmpty {
+            content = AnyView(
+                VStack {
+                    Image(systemName: "tray")
+                        .resizable()
+                        .foregroundColor(.gray200)
+                        .frame(width: 80, height: 60)
+                        .padding(.top, screenHeight * 0.25)
+                    
+                    Text("현재 해당 식기록이 없어요")
+                        .foregroundColor(.gray200)
+                        .font(.pretendard(.bold, size: 17))
+                        .padding(.top, 20)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+            ) // AnyView
+        } else {
+            content = AnyView(
+                ForEach(keys, id:\.self) { key in
+                    VStack {
+                        listTitle(itemDictionary: targetDictionary, key: key)
+                        itemList(itemDictionary: targetDictionary, key: key)
+
+                        if keys.last != key {
+                            Rectangle()
+                                .foregroundColor(.gray100)
+                                .frame(height: 12)
+                        } // if
+                    } // VStack
+                } // ForEach
+            ) // AnyView
+        } // else
+        
+        return content
+    } // listSection
     
     func listTitle(itemDictionary: [String: [Receipt]], key: String) -> some View {
         HStack {
             Text(key)
-                .foregroundColor(Color("Gray900"))
-                .font(.pretendard(.semiBold, size: 20))
+                .foregroundColor(.gray800)
+                .font(.pretendard(.bold, size: 17))
             
             Spacer()
-            
-            Text("\(itemDictionary[key]?.first?.dateOfHistory.remainingDate ?? "90")일 남음")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(Color("Gray600"))
-            
-        } //HStack닫기
-        .padding(.vertical, 17)
+        } // HStack
+        .padding(.top, 16)
         .padding(.horizontal, 20)
-        
-    } //listTitle닫기
+    } // listTitle
     
     func itemList(itemDictionary: [String: [Receipt]], key: String) -> AnyView {
         guard let itemList = itemDictionary[key] else { return AnyView(EmptyView()) }
         
         return AnyView(
             ForEach(itemList, id:\.self) { item in
-            VStack {
-                HStack {
+                HStack(spacing: 0) {
                     Image(item.icon)
                         .resizable()
-                        .foregroundColor(Color("Gray200"))
-                        .frame(width: 36, height: 36)
-                    
-                    Spacer()
-                        .frame(width: 12)
+                        .foregroundColor(.gray200)
+                        .frame(width: 40, height: 40)
+                        .padding(.trailing, 12)
                     
                     Text(item.name)
                         .font(.pretendard(.semiBold, size: 17))
-                        .foregroundColor(Color("Gray900"))
+                        .foregroundColor(.gray900)
                     
                     Spacer()
                     
-                    menuButtons(item: item)
-
-                    Divider()
-                        .overlay(Color("Gray100"))
-                        .opacity(item == itemList.last ? 0 : 1)
-
+                    contextMenus(item: item)
                 } //HStack닫기
-                .padding(.leading, 20)
-            } //VStack닫기
-        } //ForEach닫기
-        )
-
-    } //itemList닫기
+                .padding(.horizontal, 20)
+                .padding(.vertical, 8)
+            } // ForEach
+        ) // AnyView
+    } // itemList
     
-    
-    func menuButtons(item: Receipt) -> some View {
+    func contextMenus(item: Receipt) -> some View {
         Menu {
             Button(action: {
-                //아이템 상태 복구 로직
                 coreDataViewModel.recoverPreviousStatus(target: item)
             }, label: {
                 Text("복구하기")
                 Image(systemName: "arrow.counterclockwise")
-            })
+            }) // Button
             
             Divider()
             
@@ -222,7 +202,7 @@ struct HistoryView: View {
             }, label: {
                 Text("삭제하기")
                 Image(systemName: "trash.fill")
-            })
+            }) // Buton
         } label: {
             Rectangle()
                 .frame(width: 36, height: 36)
@@ -233,11 +213,9 @@ struct HistoryView: View {
                         .foregroundColor(Color("Gray200"))
                         .frame(width: 21, height: 5)
                 )
-                .padding(.trailing, 20)
-        } //Menu닫기
-    }
-    
-} //struct닫기
+        } // Menu
+    } // menuButtons
+} // struct
 
 struct HistoryView_Previews: PreviewProvider {
     static let coreDataViewModel = CoreDataViewModel()
