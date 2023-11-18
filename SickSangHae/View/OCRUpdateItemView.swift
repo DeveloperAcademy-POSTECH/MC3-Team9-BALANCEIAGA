@@ -15,6 +15,8 @@ struct OCRUpdateItemView: View {
     @State private var isItemCheckView = false
     let appState: AppState
     
+    @State var showCalendarModal = false
+    
     var body: some View {
             ZStack(alignment: .top) {
                 Color.white
@@ -22,7 +24,7 @@ struct OCRUpdateItemView: View {
                 VStack(spacing: 0) {
                     topBar
                     Spacer().frame(height: 36.adjusted)
-                    DateSelectionView(viewModel: viewModel)
+                    DateSelectionView(viewModel: viewModel, showCalendarModal: $showCalendarModal)
                     Spacer().frame(height: 30.adjusted)
                     ZStack(alignment: .top) {
                         VStack(spacing: 0) {
@@ -61,7 +63,7 @@ struct OCRUpdateItemView: View {
         }
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $viewModel.isDatePickerOpen){
-            CalendarModalView(viewModel: viewModel)
+            CalendarModalView(viewModel: viewModel, showCalendarModal: $showCalendarModal)
                 .presentationDetents([.large, .fraction(0.65), .fraction(0.75)])
         }
     }
@@ -131,13 +133,24 @@ struct OCRUpdateItemView: View {
 extension OCRUpdateItemView {
     struct CalendarModalView: View {
         @ObservedObject var viewModel: UpdateItemViewModel
+        @Binding var showCalendarModal: Bool
         
         var body: some View {
             VStack(spacing: 0) {
+                HStack(alignment: .center){
+                    Text("날짜 바꾸기")
+                        .font(.pretendard(.semiBold, size: 17))
+                        .padding(.top, 41)
+                }
                 DatePicker("날짜 선택", selection: $viewModel.date, displayedComponents: .date)
                     .datePickerStyle(GraphicalDatePickerStyle())
                     .labelsHidden()
                     .padding()
+                    .onChange(of: viewModel.date, perform: { newDate in
+                        if newDate > Date() {
+                            viewModel.date = Date()
+                        }
+                    })
                 
                 ZStack {
                     Rectangle()
@@ -145,7 +158,7 @@ extension OCRUpdateItemView {
                         .foregroundColor(Color.gray50)
                         .cornerRadius(12)
                     Button {
-                        //
+                        showCalendarModal = false
                     } label: {
                         Text("확인")
                             .foregroundColor(.primaryGB)
@@ -159,6 +172,7 @@ extension OCRUpdateItemView {
     
     struct DateSelectionView: View {
         @ObservedObject var viewModel: UpdateItemViewModel
+        @Binding var showCalendarModal: Bool
         
         var body: some View {
             HStack(spacing: 24) {
@@ -171,7 +185,8 @@ extension OCRUpdateItemView {
                 })
                 
                 Button(action: {
-                    viewModel.isDatePickerOpen.toggle()
+//                    viewModel.isDatePickerOpen.toggle()
+                    showCalendarModal = true
                 }, label: {
                     Text("\(viewModel.dateString)")
                         .font(.pretendard(.bold, size: 20))

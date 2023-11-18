@@ -14,6 +14,8 @@ struct DirectUpdateItemView: View {
     @State private var isItemCheckView = false
     @State var appState: AppState
     
+    @State var showCalendarModal = false
+    
     var body: some View {
             ZStack(alignment: .top) {
                 Color.white
@@ -21,7 +23,7 @@ struct DirectUpdateItemView: View {
                 VStack {
                     topBar
                     Spacer().frame(height: 36.adjusted)
-                    DateSelectionView(viewModel: viewModel)
+                    DateSelectionView(viewModel: viewModel, showCalendarModal: $showCalendarModal)
                     Spacer().frame(height: 30.adjusted)
                     ZStack(alignment: .top) {
                         VStack {
@@ -55,9 +57,6 @@ struct DirectUpdateItemView: View {
                                     .disabled(viewModel.countItemCheckView == 0 ? true : false)
                             }
                         }
-                        if viewModel.isDatePickerOpen {
-                            DatePickerView(viewModel: viewModel)
-                        }
                     }
                 }
             }
@@ -65,6 +64,10 @@ struct DirectUpdateItemView: View {
                 self.endTextEditing()
             }
         .navigationBarBackButtonHidden(true)
+        .sheet(isPresented: $showCalendarModal){
+            CalendarModalView(viewModel: viewModel, showCalendarModal: $showCalendarModal)
+                .presentationDetents([.large, .fraction(0.65)])
+        }
     }
     
     
@@ -136,8 +139,47 @@ struct DirectUpdateItemView: View {
 }
 
 extension DirectUpdateItemView {
+    struct CalendarModalView: View {
+        @ObservedObject var viewModel: UpdateItemViewModel
+        @Binding var showCalendarModal: Bool
+        
+        var body: some View {
+            VStack(spacing: 0) {
+                HStack(alignment: .center){
+                    Text("날짜 바꾸기")
+                        .font(.pretendard(.semiBold, size: 17))
+                        .padding(.top, 41)
+                }
+                DatePicker("날짜 선택", selection: $viewModel.date, displayedComponents: .date)
+                    .datePickerStyle(GraphicalDatePickerStyle())
+                    .labelsHidden()
+                    .padding()
+                    .onChange(of: viewModel.date, perform: { newDate in
+                        if newDate > Date() {
+                            viewModel.date = Date()
+                        }
+                    })
+                
+                ZStack {
+                    Rectangle()
+                        .frame(width: 350, height: 60)
+                        .foregroundColor(Color.gray50)
+                        .cornerRadius(12)
+                    Button {
+                        showCalendarModal = false
+                    } label: {
+                        Text("확인")
+                            .foregroundColor(.primaryGB)
+                            .bold()
+                    }
+                }
+                .padding(.bottom, 30)
+            }
+        }
+    }
     struct DateSelectionView: View {
         @ObservedObject var viewModel: UpdateItemViewModel
+        @Binding var showCalendarModal: Bool
         
         var body: some View {
             HStack(spacing: 24) {
@@ -150,7 +192,7 @@ extension DirectUpdateItemView {
                 })
                 
                 Button(action: {
-                    viewModel.isDatePickerOpen.toggle()
+                    showCalendarModal = true
                 }, label: {
                     Text("\(viewModel.dateString)")
                         .font(.system(size: 20).bold())
@@ -205,4 +247,3 @@ extension DirectUpdateItemView {
         viewModel.addNewItemBlock()
     }
 }
-
